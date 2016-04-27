@@ -7,6 +7,8 @@ class
 	BEM_DOCS
 
 note
+	EIS: "src=http://getbem.com/introduction/"
+	EIS: "src=http://www.slideshare.net/MaxShirshin/bem-it-for-brandwatch"
 	definition: "[
 		What is "BEM"?
 		==============
