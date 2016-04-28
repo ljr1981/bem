@@ -140,6 +140,20 @@ feature -- Access
 	modifier: detachable BEM_MODIFIER
 			-- Optional `modifier' of Current {BEM_BLOCK}.
 
+	rule: attached like internal_rule
+			-- `rule' of Current {BEM_BLOCK}.
+		do
+			check has_rule: attached internal_rule as al_rule then
+				Result := al_rule
+				Result.add_class_selector (out)
+			end
+		end
+
+feature {NONE} -- Implementation: Access
+
+	internal_rule: detachable BEM_RULE
+			-- Optional `internal_rule' for Current {BEM_BLOCK}.
+
 feature -- Settings
 
 	set_name (a_name: like name)
@@ -164,6 +178,14 @@ feature -- Settings
 			modifier := a_modifier
 		ensure
 			set: attached modifier as al_modifier and then al_modifier ~ a_modifier
+		end
+
+	set_rule (a_rule: attached like internal_rule)
+			-- `set_rule' `a_rule' into `internal_rule'.
+		do
+			internal_rule := a_rule
+		ensure
+			set: attached internal_rule as al_rule and then al_rule ~ a_rule
 		end
 
 feature -- Output
