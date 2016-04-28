@@ -15,12 +15,17 @@ inherit
 			out
 		end
 
+	BEM_CONSTANTS
+		undefine
+			out
+		end
+
 create
-	default_create,
 	make,
 	make_with_element,
 	make_with_modifier,
-	make_with_element_and_modifier
+	make_with_element_and_modifier,
+	make_with_bem_text
 
 feature {NONE} -- Initialization
 
@@ -30,7 +35,8 @@ feature {NONE} -- Initialization
 			has_name: not a_name.is_empty
 			has_element: not a_element.is_empty
 		do
-			make (a_name, <<create {BEM_ELEMENT}.make (a_element, Void)>>)
+			make (a_name)
+			element := create {BEM_ELEMENT}.make (a_element)
 		end
 
 	make_with_modifier (a_name, a_modifier: like name)
@@ -39,7 +45,8 @@ feature {NONE} -- Initialization
 			has_name: not a_name.is_empty
 			has_modifier: not a_modifier.is_empty
 		do
-			make (a_name, <<create {BEM_MODIFIER}.make (a_modifier, Void)>>)
+			make (a_name)
+			modifier := create {BEM_MODIFIER}.make (a_modifier)
 		end
 
 	make_with_element_and_modifier (a_name, a_element, a_modifier: like name)
@@ -49,44 +56,89 @@ feature {NONE} -- Initialization
 			has_element: not a_element.is_empty
 			has_modifier: not a_modifier.is_empty
 		do
-			make (a_name, <<create {BEM_ELEMENT}.make (a_element, Void), create {BEM_MODIFIER}.make (a_modifier, Void)>>)
+			make (a_name)
+			element := create {BEM_ELEMENT}.make (a_element)
+			modifier := create {BEM_MODIFIER}.make (a_modifier)
 		end
 
-	make (a_name: like name; a_parts: detachable ARRAY [BEM_BLOCK])
+	make (a_name: like name)
 			-- `make' Current with `a_name' and `a_parts'.
 		do
 			name := a_name
-			if attached a_parts as al_parts then
-				across al_parts as ic loop parts.force (ic.item) end
-			end
 		ensure
 			name_set: name.same_string (a_name)
-			parts: attached a_parts as al_parts implies
-					across al_parts as ic all parts.has (ic.item) end
+		end
+
+	make_with_bem_text (a_bem_text: STRING)
+			-- `make_with_bem_text' of `a_bem_text'.
+		do
+			if a_bem_text.has_substring (element_prefix_text) and a_bem_text.has_substring (modifier_prefix_text) then
+				split_block_element_modifier (a_bem_text)
+			elseif a_bem_text.has_substring (element_prefix_text) then
+				split_block_element (a_bem_text)
+			elseif a_bem_text.has_substring (modifier_prefix_text) then
+				split_block_modifier (a_bem_text)
+			else
+				create name.make_empty
+				check False end
+			end
+		end
+
+	split_block_element_modifier (a_bem_text: STRING)
+		local
+			l_text: STRING
+			l_list: LIST [STRING]
+		do
+			l_text := a_bem_text.twin
+			l_text.replace_substring_all (element_prefix_text, common_splitter.out)
+			l_text.replace_substring_all (modifier_prefix_text, common_splitter.out)
+			l_list := l_text.split (common_splitter)
+			check bem_count: l_list.count = 3 end
+			name := l_list [1]
+			create element.make (l_list [2])
+			create modifier.make (l_list [3])
+		end
+
+	split_block_element (a_bem_text: STRING)
+		require
+			no_modifier: not a_bem_text.has_substring (modifier_prefix_text)
+		local
+			l_text: STRING
+			l_list: LIST [STRING]
+		do
+			l_text := a_bem_text.twin
+			l_text.replace_substring_all (element_prefix_text, common_splitter.out)
+			l_list := l_text.split (common_splitter)
+			check bem_count: l_list.count = 2 end
+			name := l_list [1]
+			create element.make (l_list [2])
+		end
+
+	split_block_modifier (a_bem_text: STRING)
+		require
+			no_element: not a_bem_text.has_substring (element_prefix_text)
+		local
+			l_text: STRING
+			l_list: LIST [STRING]
+		do
+			l_text := a_bem_text.twin
+			l_text.replace_substring_all (modifier_prefix_text, common_splitter.out)
+			l_list := l_text.split (common_splitter)
+			check bem_count: l_list.count = 2 end
+			name := l_list [1]
+			create modifier.make (l_list [2])
 		end
 
 feature -- Access
 
 	name: STRING
 			-- `name' of Current {BEM_BLOCK}.
-		attribute
-			create Result.make_empty
-		end
 
-	parts: ARRAYED_LIST [BEM_BLOCK]
-			-- `parts' of Current {BEM_BLOCK}.
-		attribute
-			create Result.make (Default_capacity)
-		end
+	element: detachable BEM_ELEMENT
+			-- Optional `element' of Current {BEM_BLOCK}.
 
-	prefix_text: STRING
-		once ("object")
-			create Result.make_empty
-		end
-			-- `prefix_text' which is placed in front of Current on `out'.
-
-	separator: CHARACTER = '-'
-			-- `separator' character.
+	modifier: detachable BEM_MODIFIER
+			-- Optional `modifier' of Current {BEM_BLOCK}.
 
 feature -- Settings
 
@@ -98,10 +150,20 @@ feature -- Settings
 			set: name.same_string (a_name)
 		end
 
-	add_part (a_part: like Current)
-			-- `add_part' `a_part' to `parts'.
+	set_element (a_element: attached like element)
+			-- `set_element' with `a_element'.
 		do
-			parts.force (a_part)
+			element := a_element
+		ensure
+			set: attached element as al_element and then al_element ~ a_element
+		end
+
+	set_modifier (a_modifier: attached like modifier)
+			-- `set_element' with `a_modifier'.
+		do
+			modifier := a_modifier
+		ensure
+			set: attached modifier as al_modifier and then al_modifier ~ a_modifier
 		end
 
 feature -- Output
@@ -112,21 +174,26 @@ feature -- Output
 			create Result.make_empty
 			Result.append_string (prefix_text)
 			Result.append_string (name)
-			across
-				parts as ic_parts
-			loop
-				if ic_parts.item.generating_type.same_string (generating_type) then
-					Result.append_character (separator)
-				else
-					Result.append_string (ic_parts.item.prefix_text)
-				end
-				Result.append_string (ic_parts.item.name)
+			if attached element as al_element then
+				Result.append_string (al_element.prefix_text)
+				Result.append_string (al_element.name)
+			end
+			if attached modifier as al_modifier then
+				Result.append_string (al_modifier.prefix_text)
+				Result.append_string (al_modifier.name)
 			end
 		end
 
 feature -- Constants
 
-	Default_capacity: INTEGER = 10
+	prefix_text: STRING
+			-- `prefix_text' which is placed in front of Current on `out'.
+		once ("object")
+			Result := ""
+		end
+
+	separator: CHARACTER = '-'
+			-- `separator' character.
 
 note
 	design: "[

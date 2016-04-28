@@ -16,15 +16,15 @@ inherit
 		end
 
 create
-	default_create,
 	make
 
 feature -- Access
 
 	prefix_text: STRING
 			-- <Precursor>
+			-- Using `element_prefix_text'
 		once ("object")
-			Result := "__"
+			Result := element_prefix_text
 		end
 
 note

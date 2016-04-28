@@ -9,6 +9,7 @@ class
 note
 	EIS: "src=http://getbem.com/introduction/"
 	EIS: "src=http://www.slideshare.net/MaxShirshin/bem-it-for-brandwatch"
+	EIS: "src=http://stackoverflow.com/questions/27894664/how-to-properly-set-an-elements-scope-using-bem"
 	definition: "[
 		What is "BEM"?
 		==============
