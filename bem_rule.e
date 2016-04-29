@@ -64,7 +64,7 @@ feature -- Settings
 
 	add_rule (a_rule: like internal_css_rule)
 		do
-			internal_css_rule.add_rule (a_rule, internal_css_rule)
+			internal_css_rule.add_sub_rule (a_rule)
 		end
 
 	add_class_selector (a_name: STRING)
