@@ -10,6 +10,6 @@ feature -- Constants
 
 	element_prefix_text: STRING = "__"
 	modifier_prefix_text: STRING = "--"
-	common_splitter: CHARACTER = '|'
+	common_split_delimiter: CHARACTER = '|'
 
 end

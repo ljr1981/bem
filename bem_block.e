@@ -84,15 +84,21 @@ feature {NONE} -- Initialization
 			end
 		end
 
+feature {NONE} -- Initialization: Support
+
 	split_block_element_modifier (a_bem_text: STRING)
+			-- `split_block_element_modifier' on `a_bem_text'.
+		require
+			both: a_bem_text.has_substring (element_prefix_text) and then
+					a_bem_text.has_substring (modifier_prefix_text)
 		local
 			l_text: STRING
 			l_list: LIST [STRING]
 		do
 			l_text := a_bem_text.twin
-			l_text.replace_substring_all (element_prefix_text, common_splitter.out)
-			l_text.replace_substring_all (modifier_prefix_text, common_splitter.out)
-			l_list := l_text.split (common_splitter)
+			l_text.replace_substring_all (element_prefix_text, common_split_delimiter.out)
+			l_text.replace_substring_all (modifier_prefix_text, common_split_delimiter.out)
+			l_list := l_text.split (common_split_delimiter)
 			check bem_count: l_list.count = 3 end
 			name := l_list [1]
 			create element.make (l_list [2])
@@ -100,6 +106,7 @@ feature {NONE} -- Initialization
 		end
 
 	split_block_element (a_bem_text: STRING)
+			-- `split_block_element' on `a_bem_text'.
 		require
 			no_modifier: not a_bem_text.has_substring (modifier_prefix_text)
 		local
@@ -107,14 +114,15 @@ feature {NONE} -- Initialization
 			l_list: LIST [STRING]
 		do
 			l_text := a_bem_text.twin
-			l_text.replace_substring_all (element_prefix_text, common_splitter.out)
-			l_list := l_text.split (common_splitter)
+			l_text.replace_substring_all (element_prefix_text, common_split_delimiter.out)
+			l_list := l_text.split (common_split_delimiter)
 			check bem_count: l_list.count = 2 end
 			name := l_list [1]
 			create element.make (l_list [2])
 		end
 
 	split_block_modifier (a_bem_text: STRING)
+			-- `split_block_modifier' on `a_bem_text'.
 		require
 			no_element: not a_bem_text.has_substring (element_prefix_text)
 		local
@@ -122,8 +130,8 @@ feature {NONE} -- Initialization
 			l_list: LIST [STRING]
 		do
 			l_text := a_bem_text.twin
-			l_text.replace_substring_all (modifier_prefix_text, common_splitter.out)
-			l_list := l_text.split (common_splitter)
+			l_text.replace_substring_all (modifier_prefix_text, common_split_delimiter.out)
+			l_list := l_text.split (common_split_delimiter)
 			check bem_count: l_list.count = 2 end
 			name := l_list [1]
 			create modifier.make (l_list [2])

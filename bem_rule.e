@@ -7,7 +7,7 @@ class
 	BEM_RULE
 
 inherit
-	ANY
+	BEM_ANY
 		undefine
 			out
 		end
