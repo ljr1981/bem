@@ -71,7 +71,12 @@ feature -- Testing: BEM
 			l_modifier: BEM_MODIFIER
 		do
 			create l_element.make ("female")
+			assert_strings_equal ("female_name", "female", l_element.name)
+			assert_strings_equal ("female_element_out", "__female", l_element.out)
+
 			create l_modifier.make ("hand")
+			assert_strings_equal ("hand_name", "hand", l_modifier.name)
+			assert_strings_equal ("hand_modifier_out", "--hand", l_modifier.out)
 
 			create l_block.make_with_element_and_modifier ("person", "female", "hand")
 			assert_strings_equal ("person_female_hand2", "person__female--hand", l_block.out)
