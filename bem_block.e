@@ -25,7 +25,10 @@ create
 	make_with_element,
 	make_with_modifier,
 	make_with_element_and_modifier,
-	make_with_bem_text
+	make_with_bem_text,
+	make_class_based,
+	make_tag_based,
+	make_id_based
 
 feature {NONE} -- Initialization
 
@@ -67,6 +70,38 @@ feature {NONE} -- Initialization
 			name := a_name
 		ensure
 			name_set: name.same_string (a_name)
+		end
+
+	make_class_based (a_tag_name: like name; a_rule: BEM_RULE)
+			-- `make_tag_based' using `a_tag_name'.
+		do
+			make (a_tag_name)
+			set_rule (a_rule)
+			if attached internal_rule as al_rule then
+				al_rule.set_is_class_based
+			end
+		end
+
+	make_tag_based (a_tag_name: like name; a_rule: BEM_RULE)
+			-- `make_tag_based' using `a_tag_name'.
+		do
+			make (a_tag_name)
+			set_rule (a_rule)
+			if attached internal_rule as al_rule then
+				al_rule.add_tag_selector (a_tag_name)
+				al_rule.set_is_tag_based
+			end
+		end
+
+	make_id_based (a_unique_identifier: like name; a_rule: BEM_RULE)
+			-- `make_tag_based' using `a_unique_identifier'.
+		do
+			make (a_unique_identifier)
+			set_rule (a_rule)
+			if attached internal_rule as al_rule then
+				al_rule.add_id_selector (a_unique_identifier)
+				al_rule.set_is_id_based
+			end
 		end
 
 	make_with_bem_text (a_bem_text: STRING)
@@ -153,7 +188,13 @@ feature -- Access
 		do
 			check has_rule: attached internal_rule as al_rule then
 				Result := al_rule
-				Result.add_class_selector (out)
+				if al_rule.is_class_based then
+					Result.add_class_selector (out)
+				elseif al_rule.is_tag_based then
+					Result.add_tag_selector (out)
+				elseif al_rule.is_id_based then
+					Result.add_id_selector (out)
+				end
 			end
 		end
 
@@ -202,15 +243,23 @@ feature -- Output
 			-- <Precursor>
 		do
 			create Result.make_empty
-			Result.append_string (prefix_text)
-			Result.append_string (name)
-			if attached element as al_element then
-				Result.append_string (al_element.prefix_text)
-				Result.append_string (al_element.name)
-			end
-			if attached modifier as al_modifier then
-				Result.append_string (al_modifier.prefix_text)
-				Result.append_string (al_modifier.name)
+			if attached internal_rule as al_rule then
+				if al_rule.is_class_based then
+					Result.append_string (prefix_text)
+					Result.append_string (name)
+					if attached element as al_element then
+						Result.append_string (al_element.prefix_text)
+						Result.append_string (al_element.name)
+					end
+					if attached modifier as al_modifier then
+						Result.append_string (al_modifier.prefix_text)
+						Result.append_string (al_modifier.name)
+					end
+				else
+					--Result.append (al_rule.selectors_out)
+				end
+			else
+				Result := "*"
 			end
 		end
 

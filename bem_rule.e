@@ -15,6 +15,18 @@ inherit
 			out
 		end
 
+	CSS_RULE_ACCESSOR
+		undefine
+			default_create,
+			out
+		end
+
+	CSS_CONSTANTS
+		undefine
+			default_create,
+			out
+		end
+
 create
 	make_selectors_comma_delimited,
 	make_selectors_space_delimited
@@ -43,12 +55,6 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	out: like internal_css_rule.out
-			-- Render Current to well-formed CSS.
-		do
-			Result := internal_css_rule.out
-		end
-
 	rules: like internal_css_rule.rules
 			-- A list of `rules' used by Current.
 		do
@@ -61,7 +67,52 @@ feature -- Access
 			Result := internal_css_rule
 		end
 
+	is_class_based: BOOLEAN
+			-- `is_class_based'?
+		do
+			Result := not is_tag_based and not is_id_based
+		end
+
+	is_tag_based: BOOLEAN
+			-- `is_tag_based'?
+			-- Usually, BEM is about .Class, but we need a
+			-- way to specify that the {BEM_RULE} is based
+			-- on and output as a <tag> (e.g. tag like 'form').
+
+	is_id_based: BOOLEAN
+			-- `is_id_based'?
+			-- Like `is_tag_based', we need a way to specify
+			-- that this {BEM_RULE} is based on and output as
+			-- a #Unique_id rather than as a .Class selector.
+
 feature -- Settings
+
+	set_is_class_based
+			-- `set_is_class_based' resets `is_tag_based' and `is_id_based' to False.
+		do
+			is_tag_based := False
+			is_id_based := False
+		ensure
+			is_class_based and not is_tag_based and not is_id_based
+		end
+
+	set_is_tag_based
+			-- `set_is_tag_based' on `is_tag_based', resetting `is_id_based'.
+		do
+			is_tag_based := True
+			is_id_based := False
+		ensure
+			is_tag_based and not is_id_based and not is_class_based
+		end
+
+	set_is_id_based
+			-- `set_is_tag_based' on `is_id_based', resetting `is_tag_based'.
+		do
+			is_id_based := True
+			is_tag_based := False
+		ensure
+			is_id_based and not is_tag_based and not is_class_based
+		end
 
 	set_selectors_space_delimited
 			-- `set_selectors_space_delimited' like `internal_css_rule'.
@@ -92,6 +143,35 @@ feature -- Settings
 			-- internal CSS rule.
 		do
 			internal_css_rule.add_class_selector (a_name)
+		end
+
+	add_tag_selector (a_name: STRING)
+			-- `add_tag_selector' using `a_name' to `class_rule'.
+			-- Add a tag-based selector with `a_name' to the
+			-- internal CSS rule.
+		do
+			internal_css_rule.add_tag_selector (a_name)
+		end
+
+	add_id_selector (a_name: STRING)
+			-- `add_id_selector' using `a_name' to `class_rule'.
+			-- Add a id-based selector with `a_name' to the
+			-- internal CSS rule.
+		do
+			internal_css_rule.add_id_selector (a_name)
+		end
+
+feature -- Output
+
+	selectors_out: STRING
+		do
+			Result := internal_css_rule.selectors_out (space_character)
+		end
+
+	out: like internal_css_rule.out
+			-- Render Current to well-formed CSS.
+		do
+			Result := internal_css_rule.out
 		end
 
 feature {NONE} -- Implementation: {CSS_RULE}
