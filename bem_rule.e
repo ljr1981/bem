@@ -13,21 +13,21 @@ inherit
 		end
 
 create
-	make_inclusive,
-	make_separate
+	make_selectors_comma_delimited,
+	make_selectors_space_delimited
 
 feature {NONE} -- Initialization
 
-	make_inclusive (a_declarations: ARRAY [CSS_DECLARATION])
-			-- `make_inclusive' with `a_declarations'.
+	make_selectors_comma_delimited (a_declarations: ARRAY [CSS_DECLARATION])
+			-- `make_selectors_comma_delimited' with `a_declarations'.
 		do
-			create internal_css_rule.make_inclusive (<<>>, a_declarations)
+			create internal_css_rule.make_selectors_comma_delimited (<<>>, a_declarations)
 		end
 
-	make_separate (a_declarations: ARRAY [CSS_DECLARATION])
-			-- `make_separate' with `a_declarations'.
+	make_selectors_space_delimited (a_declarations: ARRAY [CSS_DECLARATION])
+			-- `make_selectors_space_delimited' with `a_declarations'.
 		do
-			create internal_css_rule.make_separate (<<>>, a_declarations)
+			create internal_css_rule.make_with_selectors_space_delimited (<<>>, a_declarations)
 		end
 
 feature -- Access
@@ -50,16 +50,16 @@ feature -- Access
 
 feature -- Settings
 
-	set_inclusive
-			-- `set_inclusive' like `internal_css_rule'.
+	set_selectors_space_delimited
+			-- `set_selectors_space_delimited' like `internal_css_rule'.
 		do
-			internal_css_rule.set_inclusive
+			internal_css_rule.set_selectors_to_space_delimited
 		end
 
-	set_separate
-			-- `set_separate' like `internal_css_rule'.
+	set_selectors_comma_delimited
+			-- `set_selectors_comma_delimited' like `internal_css_rule'.
 		do
-			internal_css_rule.set_separate
+			internal_css_rule.set_selectors_to_comma_delimited
 		end
 
 	add_rule (a_rule: like internal_css_rule)

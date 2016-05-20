@@ -97,7 +97,7 @@ feature -- Testing: BEM + CSS
 			l_rule: BEM_RULE
 		do
 			create l_bem.make_with_bem_text ("person__female--hand")
-			create l_rule.make_inclusive (<<create {CSS_DECLARATION}.make_quoted_value ("color", "black")>>)
+			create l_rule.make_selectors_comma_delimited (<<create {CSS_DECLARATION}.make_quoted_value ("color", "black")>>)
 			l_bem.set_rule (l_rule)
 			assert_strings_equal ("bem_css_text", basic_bem_css_text, l_bem.rule.out)
 		end
