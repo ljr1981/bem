@@ -65,6 +65,7 @@ feature -- Testing: BEM
 			EIS: "src=http://getbem.com/introduction/"
 			EIS: "src=http://csswizardry.com/2013/01/mindbemding-getting-your-head-round-bem-syntax/"
 		local
+			l_theme: BEM_THEME
 			l_docs: BEM_DOCS
 			l_block: BEM_BLOCK
 			l_element: BEM_ELEMENT
@@ -86,6 +87,9 @@ feature -- Testing: BEM
 
 			create l_block.make_with_modifier ("person", "hand")
 			assert_strings_equal ("person_hand", "person--hand", l_block.out)
+
+			create l_theme
+			create l_theme.make_with_blocks (<<l_block>>)
 		end
 
 feature -- Testing: BEM + CSS

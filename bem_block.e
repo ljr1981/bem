@@ -245,21 +245,34 @@ feature -- Output
 			create Result.make_empty
 			if attached internal_rule as al_rule then
 				if al_rule.is_class_based then
-					Result.append_string (prefix_text)
-					Result.append_string (name)
-					if attached element as al_element then
-						Result.append_string (al_element.prefix_text)
-						Result.append_string (al_element.name)
-					end
-					if attached modifier as al_modifier then
-						Result.append_string (al_modifier.prefix_text)
-						Result.append_string (al_modifier.name)
-					end
+					Result := bem_out
 				else
-					--Result.append (al_rule.selectors_out)
+					Result := alternates_out
 				end
 			else
-				Result := "*"
+				Result := bem_out
+			end
+		end
+
+	alternates_out: like out
+			-- `alternates_out'.
+		do
+			create Result.make_empty
+		end
+
+	bem_out: like out
+			-- `bem_out'.
+		do
+			create Result.make_empty
+			Result.append_string (prefix_text)
+			Result.append_string (name)
+			if attached element as al_element then
+				Result.append_string (al_element.prefix_text)
+				Result.append_string (al_element.name)
+			end
+			if attached modifier as al_modifier then
+				Result.append_string (al_modifier.prefix_text)
+				Result.append_string (al_modifier.name)
 			end
 		end
 
