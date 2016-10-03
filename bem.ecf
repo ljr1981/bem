@@ -9,7 +9,6 @@
 		<setting name="console_application" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="css" location="..\css\css.ecf"/>
-		<library name="framework" location="..\framework\framework.ecf"/>
 		<library name="test_extension" location="..\test_extension\test_extension.ecf"/>
 		<cluster name="bem" location=".\" recursive="true">
 			<file_rule>
