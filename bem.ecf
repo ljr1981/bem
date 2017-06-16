@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-15-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-15-0 http://www.eiffel.com/developers/xml/configuration-1-15-0.xsd" name="bem" uuid="1B1E365F-A4E1-DF3A-7D1E-0000611C6B85" library_target="bem">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-16-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-16-0 http://www.eiffel.com/developers/xml/configuration-1-16-0.xsd" name="bem" uuid="1B1E365F-A4E1-DF3A-7D1E-0000611C6B85" library_target="bem">
 	<description>bem implementation</description>
 	<target name="bem">
 		<root all_classes="true"/>
-		<option warning="true" void_safety="transitional" syntax="provisional">
+		<option warning="true" syntax="provisional">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="console_application" value="true"/>
+		<capability>
+			<concurrency support="thread" use="thread"/>
+			<void_safety support="transitional" use="transitional"/>
+		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="css" location="..\css\css.ecf"/>
 		<library name="test_extension" location="..\test_extension\test_extension.ecf"/>

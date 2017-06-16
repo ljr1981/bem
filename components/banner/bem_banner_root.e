@@ -12,7 +12,7 @@ deferred class
 inherit
 	BEM_BLOCK
 
-	CSS_CONSTANTS
+	CSS
 		undefine
 			default_create,
 			out

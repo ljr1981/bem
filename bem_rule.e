@@ -21,7 +21,7 @@ inherit
 			out
 		end
 
-	CSS_CONSTANTS
+	CSS
 		undefine
 			default_create,
 			out
@@ -29,9 +29,27 @@ inherit
 
 create
 	make_selectors_comma_delimited,
-	make_selectors_space_delimited
+	make_selectors_space_delimited,
+	make_with_properties_and_values
 
 feature {NONE} -- Initialization
+
+	make_with_properties_and_values (a_pairs: ARRAY [TUPLE [property, value: STRING; is_quoted: like {CSS}.is_quoted]])
+		local
+			l_declarations: ARRAYED_LIST [CSS_DECLARATION]
+		do
+			create l_declarations.make (a_pairs.count)
+			across
+				a_pairs as ic
+			loop
+				if ic.item.is_quoted then
+					l_declarations.force (create {CSS_DECLARATION}.make_quoted_value (ic.item.property, ic.item.value))
+				else
+					l_declarations.force (create {CSS_DECLARATION}.make_unquoted_value (ic.item.property, ic.item.value))
+				end
+			end
+			make_selectors_comma_delimited (l_declarations.to_array)
+		end
 
 	make_selectors_comma_delimited (a_declarations: ARRAY [CSS_DECLARATION])
 			-- `make_selectors_comma_delimited' with `a_declarations'.
@@ -171,7 +189,9 @@ feature -- Output
 	out: like internal_css_rule.out
 			-- Render Current to well-formed CSS.
 		do
-			Result := internal_css_rule.out
+			Result := selectors_out
+			Result.append_character (' ')
+			Result.append_string_general (internal_css_rule.out)
 		end
 
 feature {NONE} -- Implementation: {CSS_RULE}

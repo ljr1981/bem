@@ -35,7 +35,7 @@ feature -- Testing: BEM
 		local
 			l_block: BEM_BLOCK
 		do
-			create l_block.make_with_bem_text ("person__female--hand")
+			create l_block.make_with_bem_text ("person__female--hand", <<>>)
 			assert_strings_equal ("name", "person", l_block.name)
 			check has_element: attached l_block.element as al_element then
 				assert_strings_equal ("element", "female", al_element.name)
@@ -44,14 +44,14 @@ feature -- Testing: BEM
 				assert_strings_equal ("element", "hand", al_modifier.name)
 			end
 
-			create l_block.make_with_bem_text ("person__female")
+			create l_block.make_with_bem_text ("person__female", <<>>)
 			assert_strings_equal ("name", "person", l_block.name)
 			check has_element: attached l_block.element as al_element then
 				assert_strings_equal ("element", "female", al_element.name)
 			end
 			check no_modifier: not attached l_block.modifier end
 
-			create l_block.make_with_bem_text ("person--hand")
+			create l_block.make_with_bem_text ("person--hand", <<>>)
 			assert_strings_equal ("name", "person", l_block.name)
 			check has_modifier: attached l_block.modifier as al_modifier then
 				assert_strings_equal ("element", "hand", al_modifier.name)
@@ -98,16 +98,20 @@ feature -- Testing: BEM + CSS
 			-- `basic_bem_css_test'.
 		local
 			l_bem: BEM_BLOCK
-			l_rule: BEM_RULE
 		do
-			create l_bem.make_with_bem_text ("person__female--hand")
-			create l_rule.make_selectors_comma_delimited (<<create {CSS_DECLARATION}.make_quoted_value ("color", "black")>>)
-			l_bem.set_rule (l_rule)
-			assert_strings_equal ("bem_css_text", basic_bem_css_text, l_bem.rule.out)
+			create l_bem.make_with_bem_text ("person__female--hand", <<["color", "black", True]>>)
+			assert_strings_equal ("bem_css_text", basic_bem_css_text, l_bem.out)
+
+			l_bem.rule.add_class_selector ("s1")
+			assert_strings_equal ("bem_s1", bem_s1, l_bem.out)
 		end
 
 feature {NONE} -- TEsting: BEM + CSS
 
 	basic_bem_css_text: STRING = ".person__female--hand {color:%"black%";}"
+
+	bem_s1: STRING = "[
+.person__female--hand,.s1 {color:"black";}
+]"
 
 end

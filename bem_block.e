@@ -15,7 +15,7 @@ inherit
 			out
 		end
 
-	BEM_CONSTANTS
+	BEM
 		undefine
 			out
 		end
@@ -104,7 +104,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	make_with_bem_text (a_bem_text: STRING)
+	make_with_bem_text (a_bem_text: STRING; a_declarations: ARRAY [TUPLE [property, value: STRING; is_quoted: BOOLEAN]])
 			-- `make_with_bem_text' of `a_bem_text'.
 		do
 			if a_bem_text.has_substring (element_prefix_text) and a_bem_text.has_substring (modifier_prefix_text) then
@@ -117,6 +117,7 @@ feature {NONE} -- Initialization
 				create name.make_empty
 				check False end
 			end
+			set_rule (create {BEM_RULE}.make_with_properties_and_values (a_declarations))
 		end
 
 feature {NONE} -- Initialization: Support
@@ -188,13 +189,13 @@ feature -- Access
 		do
 			check has_rule: attached internal_rule as al_rule then
 				Result := al_rule
-				if al_rule.is_class_based then
-					Result.add_class_selector (out)
-				elseif al_rule.is_tag_based then
-					Result.add_tag_selector (out)
-				elseif al_rule.is_id_based then
-					Result.add_id_selector (out)
-				end
+--				if al_rule.is_class_based then
+--					Result.add_class_selector (out)
+--				elseif al_rule.is_tag_based then
+--					Result.add_tag_selector (out)
+--				elseif al_rule.is_id_based then
+--					Result.add_id_selector (out)
+--				end
 			end
 		end
 
@@ -243,37 +244,7 @@ feature -- Output
 			-- <Precursor>
 		do
 			create Result.make_empty
-			if attached internal_rule as al_rule then
-				if al_rule.is_class_based then
-					Result := bem_out
-				else
-					Result := alternates_out
-				end
-			else
-				Result := bem_out
-			end
-		end
-
-	alternates_out: like out
-			-- `alternates_out'.
-		do
-			create Result.make_empty
-		end
-
-	bem_out: like out
-			-- `bem_out'.
-		do
-			create Result.make_empty
-			Result.append_string (prefix_text)
-			Result.append_string (name)
-			if attached element as al_element then
-				Result.append_string (al_element.prefix_text)
-				Result.append_string (al_element.name)
-			end
-			if attached modifier as al_modifier then
-				Result.append_string (al_modifier.prefix_text)
-				Result.append_string (al_modifier.name)
-			end
+			Result.append_string_general (rule.out)
 		end
 
 feature -- Constants
